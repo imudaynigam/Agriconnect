@@ -1,3 +1,10 @@
+import Landing from "../../nondashboard/Landing/page";
+
+
 export default function FarmerDashboard() {
-  return <h1>Welcome Farmer 👨‍🌾</h1>;
+  const user = JSON.parse(localStorage.getItem("agri-user")) || {
+    name: "Farmer"
+  };
+
+  return <Landing isFarmer={true} user={user} />;
 }

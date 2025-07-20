@@ -1,4 +1,3 @@
-
 import React from "react";
 import Navigation from "./Navigation";
 import HeroSection from "./HeroSection";
@@ -7,19 +6,18 @@ import FeaturesSection from "./FeaturesSection";
 import KeyFeaturesSection from "./KeyFeaturesSection";
 import ContactSection from "./ContactSection";
 import FooterSection from "./FooterSection";
-import AnimationBackgroundElement from "./AnimationBackgroundElement";
+import FarmerHeroSection from "../../dashboard/Farmer/FarmerHeroSection";
 
-const Landing = () => {
+const Landing = ({ showNav = true, showFooter = true, showContactSection = true, isFarmer = false, user }) => {
   return (
     <>
-      <Navigation />
-      <AnimationBackgroundElement />
-      <HeroSection />
+      {showNav && <Navigation />}
+      {isFarmer ? <FarmerHeroSection user={user} /> : <HeroSection />}
       <AboutSection />
       <FeaturesSection />
       <KeyFeaturesSection />
-      <ContactSection />
-      <FooterSection />
+      {showContactSection && <ContactSection />}
+      {showFooter && <FooterSection />}
     </>
   );
 };

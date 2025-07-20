@@ -1,0 +1,4 @@
+# Ignore model and data files in model2_income_risk
+model2_income_risk/*.pkl
+model2_income_risk/*.csv*
+model2_income_risk/*.xlsx 

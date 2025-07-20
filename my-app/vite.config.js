@@ -7,6 +7,9 @@ export default defineConfig({
   server: {
     port: 5173,
     host: true, // This will expose the server to your network
-    open: true  // This will automatically open the browser
+    open: true,  // This will automatically open the browser
+    proxy: {
+      '/contact': 'http://localhost:8000',
+    },
   }
 })

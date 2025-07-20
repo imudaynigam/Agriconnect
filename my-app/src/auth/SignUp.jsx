@@ -1,6 +1,8 @@
+import React from 'react';
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { supabase } from "../utils/supabaseClient";
+import supabase from "../supabaseClient";
+import Navigation from '../nondashboard/Landing/Navigation';
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -30,7 +32,7 @@ const SignUp = () => {
 
     if (name === "confirmPassword") {
       if (value !== formData.password) {
-        setMatchError("⚠️ Passwords do not match.");
+        setMatchError("Passwords do not match.");
       } else {
         setMatchError("");
       }
@@ -38,7 +40,7 @@ const SignUp = () => {
 
     if (name === "password" && formData.confirmPassword !== "") {
       if (formData.confirmPassword !== value) {
-        setMatchError("⚠️ Passwords do not match.");
+        setMatchError("Passwords do not match.");
       } else {
         setMatchError("");
       }
@@ -74,7 +76,7 @@ const SignUp = () => {
     const { fullName, email, password, confirmPassword, role } = formData;
 
     if (password !== confirmPassword) {
-      setMatchError("⚠️ Passwords do not match.");
+      setMatchError("Passwords do not match.");
       return;
     }
 
@@ -85,22 +87,26 @@ const SignUp = () => {
 
     try {
       setLoading(true);
-      const { data, error } = await supabase.auth.signUp({
+      const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: {
             fullName,
-            role,
+            role: role.trim().toLowerCase(),
           },
         },
       });
 
-      if (error) {
-        console.error("Supabase signup error:", error);
-        alert(error.message);
-      } else {
-        setSuccessMessage("✅ Signup successful! Please verify via email.");
+      console.log("authData after signUp:", authData);
+      const { data: sessionData } = await supabase.auth.getSession();
+      console.log("Session data:", sessionData);
+
+      if (authError) {
+        console.error("Supabase signup error:", authError);
+        alert(authError.message);
+      } else if (authData.user) {
+        setSuccessMessage("Signup successful! Please verify via email.");
         setFormData({
           fullName: "",
           email: "",
@@ -118,116 +124,119 @@ const SignUp = () => {
   };
 
   return (
-    <div className="auth-bg">
-      <div className="circle-1"></div>
-      <div className="circle-2"></div>
-      <div className="circle-3"></div>
-      <div className="circle-4"></div>
-      <div className="circle-5"></div>
+    <>
+      <Navigation />
+      <div className="auth-bg signup-bg">
+        <div className="circle-1"></div>
+        <div className="circle-2"></div>
+        <div className="circle-3"></div>
+        <div className="circle-4"></div>
+        <div className="circle-5"></div>
 
-      <div className="auth-form-container">
-        <div>
-          <h2 className="text-3xl font-bold text-gray-800 mb-2">
-            Create your account
-          </h2>
-          <p className="text-gray-600 mb-6">
-            Or{" "}
-            <Link to="/login" className="link">
-              Sign in to your account
-            </Link>
-          </p>
-        </div>
-
-        <form className="auth-form" onSubmit={handleSubmit}>
+        <div className="auth-form-container">
           <div>
-            <label htmlFor="fullName">Full Name</label>
-            <input
-              id="fullName"
-              name="fullName"
-              type="text"
-              required
-              placeholder="Enter your full name"
-              value={formData.fullName}
-              onChange={handleChange}
-            />
+            <h2 className="text-3xl font-bold text-gray-800 mb-2">
+              Create your account
+            </h2>
+            <p className="text-gray-600 mb-6">
+              Or{" "}
+              <Link to="/login" className="link">
+                Sign in to your account
+              </Link>
+            </p>
           </div>
 
-          <div>
-            <label htmlFor="email">Email address</label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              required
-              placeholder="Enter your email"
-              value={formData.email}
-              onChange={handleChange}
-            />
-          </div>
+          <form className="auth-form" onSubmit={handleSubmit}>
+            <div>
+              <label htmlFor="fullName">Full Name</label>
+              <input
+                id="fullName"
+                name="fullName"
+                type="text"
+                required
+                placeholder="Enter your full name"
+                value={formData.fullName}
+                onChange={handleChange}
+              />
+            </div>
 
-          <div>
-            <label htmlFor="password">Password</label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              required
-              placeholder="Create a strong password"
-              value={formData.password}
-              onChange={handleChange}
-            />
-            {passwordError && (
-              <div className="text-sm mt-2 p-2 rounded bg-red-50 border border-red-300 text-red-700 whitespace-pre-line">
-                {passwordError}
+            <div>
+              <label htmlFor="email">Email address</label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                required
+                placeholder="Enter your email"
+                value={formData.email}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div>
+              <label htmlFor="password">Password</label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                required
+                placeholder="Create a strong password"
+                value={formData.password}
+                onChange={handleChange}
+              />
+              {passwordError && (
+                <div className="text-sm mt-2 p-2 rounded bg-red-50 border border-red-300 text-red-700 whitespace-pre-line">
+                  {passwordError}
+                </div>
+              )}
+            </div>
+
+            <div>
+              <label htmlFor="confirmPassword">Confirm Password</label>
+              <input
+                id="confirmPassword"
+                name="confirmPassword"
+                type="password"
+                required
+                placeholder="Re-enter your password"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+              />
+              {matchError && (
+                <div className="text-sm mt-1 text-red-600">{matchError}</div>
+              )}
+            </div>
+
+            <div>
+              <label htmlFor="role">Role</label>
+              <select
+                id="role"
+                name="role"
+                required
+                value={formData.role}
+                onChange={handleChange}
+                className="auth-form input"
+              >
+                <option value="">Select your role</option>
+                <option value="farmer">Farmer</option>
+                <option value="investor">Investor</option>
+                <option value="customer">Customer</option>
+              </select>
+            </div>
+
+            <button type="submit" disabled={loading}>
+              {loading ? "Signing up..." : "Sign up"}
+            </button>
+
+            {successMessage && (
+              <div className="mt-4 p-2 bg-green-100 text-green-800 border border-green-300 rounded text-sm">
+                {successMessage}
               </div>
             )}
-          </div>
-
-          <div>
-            <label htmlFor="confirmPassword">Confirm Password</label>
-            <input
-              id="confirmPassword"
-              name="confirmPassword"
-              type="password"
-              required
-              placeholder="Re-enter your password"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-            />
-            {matchError && (
-              <div className="text-sm mt-1 text-red-600">{matchError}</div>
-            )}
-          </div>
-
-          <div>
-            <label htmlFor="role">Role</label>
-            <select
-              id="role"
-              name="role"
-              required
-              value={formData.role}
-              onChange={handleChange}
-              className="auth-form input"
-            >
-              <option value="">Select your role</option>
-              <option value="Customer">Customer</option>
-              <option value="Farmer">Farmer</option>
-              <option value="Investor">Investor</option>
-            </select>
-          </div>
-
-          <button type="submit" disabled={loading}>
-            {loading ? "Signing up..." : "Sign up"}
-          </button>
-
-          {successMessage && (
-            <div className="mt-4 p-2 bg-green-100 text-green-800 border border-green-300 rounded text-sm">
-              {successMessage}
-            </div>
-          )}
-        </form>
+          </form>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

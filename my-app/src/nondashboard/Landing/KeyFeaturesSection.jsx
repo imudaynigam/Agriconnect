@@ -1,10 +1,12 @@
 import React from "react";
 import { BarChart3, Shield, Users, TrendingUp } from "lucide-react";
+import AnimationBackgroundElement from "./AnimationBackgroundElement";
 
 const KeyFeaturesSection = () => {
   return (
-    <section className="py-20 px-6 bg-gray-50">
-      <div className="max-w-7xl mx-auto">
+    <section className="py-20 px-6 bg-white relative">
+      <AnimationBackgroundElement />
+      <div className="max-w-7xl mx-auto z-10 relative">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-6">Advanced Features</h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">

@@ -1,0 +1,6 @@
+pandas
+numpy
+scikit-learn
+openpyxl
+google-colab  # Only needed if you're running this on Google Colab
+dataset attached to the folder
